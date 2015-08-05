@@ -69,30 +69,27 @@ window.onload = function() {
         drawTo0(box);
         drawTo5(box);
     });
-
+            
     function to5pp(p) {
-        var r = (can5.width / 2);
-        var x = p.x / r;
-        var y = p.y / r;
+        var r = can5.width / 2;
 
-        x *= Math.sqrt(1 - (y * y));
-        y *= Math.sqrt(1 - (x * x));
+        var scaleX = p.x / r;
+        var scaleY = p.y / r;
 
-        x *= r;
-        y *= r;
+        var newX = p.x * Math.sqrt(1 - (scaleY * scaleY));
+        var newY = p.y * Math.sqrt(1 - (scaleX * scaleX));
 
-        return {x, y};
+        return {x : newX, y: newY};
     };
-                
+
     function drawTo0(pts) {
         ctx0.clearRect(-can0.width / 2, -can0.height / 2, can0.width, can0.height);
                 
         ctx0.beginPath();
             ctx0.moveTo(pts[0].x, pts[0].y);
             for(var i = 0; i < pts.length; i++) {
-                ctx0.lineTo(pts[i].x, pts   [i].y);
+                ctx0.lineTo(pts[i].x, pts[i].y);
             }
-            //ctx0.lineTo(pts[0].x, pts[0].y);
         ctx0.stroke();
     };
 
@@ -107,7 +104,6 @@ window.onload = function() {
                 ctx5.lineTo(pt.x, pt.y);
             }
             var pt = to5pp(pts[0]);
-            //ctx5.lineTo(pt.x, pt.y);
         ctx5.stroke();   
     };
 };

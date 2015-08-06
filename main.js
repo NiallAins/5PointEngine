@@ -78,18 +78,6 @@ window.onload = function() {
             scaleX = p.x / r,
             scaleY = p.y / r;
 
-        /*var newX = scaleX * Math.sqrt(1 - (scaleY * scaleY)),
-            newY = scaleY * Math.sqrt(1 - (scaleX * scaleX));
-
-        newX *= r;
-        newY *= r;
-
-        if (typeof(ax) === 'undefined')
-            return {x : newX, y: newY};
-        else if (ax === 'x')
-            return {x : newX, y: p.y};
-        else
-            return {x : p.x, y: newY};*/
         var ptsX = [1, 0, -1, 0, 0, scaleY];
         var ptsY = [0, 1, 0, -1, scaleX, 0];
         var newPt = getIntersec(getEq(ptsX), getEq(ptsY));
@@ -122,39 +110,10 @@ window.onload = function() {
                 ctx5.lineTo(pt.x, pt.y);
             }
         ctx5.stroke();
-
-        /*var pt = to5pp(pts[0], 'x');
-        ctx5.strokeStyle = '#F22';
-        ctx5.beginPath();
-            ctx5.moveTo(pt.x, pt.y);
-            for(var i = 0; i < pts.length / 2; i ++) {
-                pt = to5pp(pts[i], 'x');
-                ctx5.lineTo(pt.x, pt.y);
-            }
-        ctx5.stroke();
-
-        var pt = to5pp(pts[pts.length / 2], 'y');
-        ctx5.strokeStyle = '#FF2';
-        ctx5.beginPath();
-            ctx5.moveTo(pt.x, pt.y);
-            for(var i = pts.length / 2; i < pts.length; i ++) {
-                pt = to5pp(pts[i], 'y');
-                ctx5.lineTo(pt.x, pt.y);
-            }
-        ctx5.stroke();
-
-        for(var i = 0; i < pts.length; i++) {
-            pt = to5pp(pts[i]);
-            ctx5.fillStyle = '#2F2';
-            ctx5.fillRect(pt.x - 3, pt.y - 3, 6, 6);
-            pt = to5pp2(pts[i]);
-            ctx5.fillStyle = '#22F';
-            ctx5.fillRect(pt.x - 3, pt.y - 3, 6, 6);
-        }*/
     };
 
     function sq(num) {
-                return num * num;
+        return num * num;
     }
 
     function getEq(p) {

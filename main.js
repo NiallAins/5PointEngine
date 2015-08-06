@@ -73,12 +73,12 @@ window.onload = function() {
         drawTo5(box);
     });
             
-    function to5pp(p, ax) {
+    function to5pp(p) {
         var r = can5.width / 2,
             scaleX = p.x / r,
             scaleY = p.y / r;
 
-        var newX = scaleX * Math.sqrt(1 - (scaleY * scaleY)),
+        /*var newX = scaleX * Math.sqrt(1 - (scaleY * scaleY)),
             newY = scaleY * Math.sqrt(1 - (scaleX * scaleX));
 
         newX *= r;
@@ -89,7 +89,13 @@ window.onload = function() {
         else if (ax === 'x')
             return {x : newX, y: p.y};
         else
-            return {x : p.x, y: newY};
+            return {x : p.x, y: newY};*/
+        var ptsX = [1, 0, -1, 0, 0, scaleY];
+        var ptsY = [0, 1, 0, -1, scaleX, 0];
+        var newPt = getIntersec(getEq(ptsX), getEq(ptsY));
+        newPt.x *= r;
+        newPt.y *= r;
+        return newPt;
     };
 
     function drawTo0(pts) {
@@ -107,7 +113,17 @@ window.onload = function() {
     function drawTo5(pts) {
         ctx5.clearRect(-can5.width / 2, -can5.height / 2, can5.width, can5.height);
         
-        var pt = to5pp(pts[0], 'x');
+        var pt = to5pp(pts[0]);
+        ctx5.strokeStyle = '#F22';
+        ctx5.beginPath();
+            ctx5.moveTo(pt.x, pt.y);
+            for(var i = 0; i < pts.length; i ++) {
+                pt = to5pp(pts[i]);
+                ctx5.lineTo(pt.x, pt.y);
+            }
+        ctx5.stroke();
+
+        /*var pt = to5pp(pts[0], 'x');
         ctx5.strokeStyle = '#F22';
         ctx5.beginPath();
             ctx5.moveTo(pt.x, pt.y);
@@ -118,7 +134,7 @@ window.onload = function() {
         ctx5.stroke();
 
         var pt = to5pp(pts[pts.length / 2], 'y');
-        ctx5.strokeStyle = '#F22';
+        ctx5.strokeStyle = '#FF2';
         ctx5.beginPath();
             ctx5.moveTo(pt.x, pt.y);
             for(var i = pts.length / 2; i < pts.length; i ++) {
@@ -127,7 +143,7 @@ window.onload = function() {
             }
         ctx5.stroke();
 
-        /*for(var i = 0; i < pts.length; i++) {
+        for(var i = 0; i < pts.length; i++) {
             pt = to5pp(pts[i]);
             ctx5.fillStyle = '#2F2';
             ctx5.fillRect(pt.x - 3, pt.y - 3, 6, 6);
@@ -136,4 +152,40 @@ window.onload = function() {
             ctx5.fillRect(pt.x - 3, pt.y - 3, 6, 6);
         }*/
     };
+
+    function sq(num) {
+                return num * num;
+    }
+
+    function getEq(p) {
+        var k = 0.5 * (((sq(p[0])+sq(p[1])) * (p[4]-p[2])) + ((sq(p[2])+sq(p[3])) * (p[0]-p[4])) + ((sq(p[4])+sq(p[5])) * (p[2]-p[0]))) / (p[1] * (p[4]-p[2])+(p[3] * (p[0]-p[4])+(p[5] * (p[2]-p[0]))));
+        
+        var h = 0.5 * (((sq(p[0])+sq(p[1])) * (p[5]-p[3])) + ((sq(p[2])+sq(p[3])) * (p[1]-p[5])) + ((sq(p[4])+sq(p[5])) * (p[3]-p[1]))) / (p[0] * (p[5]-p[3])+(p[2] * (p[1]-p[5])+(p[4] * (p[3]-p[1]))));
+        
+        var r = sq(p[0] - h) + sq(p[1] - k);
+        h = Math.round(h* 10000) / 10000;
+        k = Math.round(k* 10000) / 10000;
+        r = Math.round(r* 10000) / 10000;
+        
+        return [h, k, r];
+    }
+
+    function getIntersec(c0, c1) {
+        var p0 = [c0[0], c0[1], Math.sqrt(c0[2])];
+        var p1 = [c1[0], c1[1], Math.sqrt(c1[2])];
+
+        var d = Math.sqrt(sq(p0[1] - p1[1]) + sq(p0[0] - p1[0])); 
+        var a = (sq(p0[2]) - sq(p1[2]) + d*d)/(2*d);
+        var h = Math.sqrt(sq(p0[2]) - a*a);
+        var p2 = [((p1[0] - p0[0]) * (a/d)) + p0[0], ((p1[1] - p0[1]) * (a/d)) + p0[1]];
+        var x3 = p2[0] + h*(p1[1] - p0[1])/d;
+        var y3 = p2[1] - h*(p1[0] - p0[0])/d;
+        var x4 = p2[0] - h*(p1[1] - p0[1])/d;
+        var y4 = p2[1] + h*(p1[0] - p0[0])/d;
+
+        if (x3 * y3 > 0)
+            return { x : x3, y : y3 };
+        else
+            return { x : x4, y : y4 };
+    }
 };

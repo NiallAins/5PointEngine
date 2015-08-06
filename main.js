@@ -17,7 +17,32 @@ window.onload = function() {
     ctx5.lineWidth = 2;
 
     var scale = 1;
-    var box = Box(scale);
+    var box = [];
+
+    for(var i = 0; i < 20; i++) {
+        if (i % 2 === 0) {
+            for (var j = 0; j < 21; j++) {
+                box.push({ x : (i * (can0.width / 20)) - (can0.width / 2), y : (j * (can0.width / 20)) - (can0.width / 2) });
+            }
+        }
+        else {
+            for (var j = 20; j >= 0; j--) {
+                box.push({ x : (i * (can0.width / 20)) - (can0.width / 2), y : (j * (can0.width / 20)) - (can0.width / 2) });
+            }
+        }
+    }
+    for(var i = 0; i < 20; i++) {
+        if (i % 2 === 0) {
+            for (var j = 0; j < 21; j++) {
+                box.push({ x : (j * (can0.width / 20)) - (can0.width / 2), y : (i * (can0.width / 20)) - (can0.width / 2) });
+            }
+        }
+        else {
+            for (var j = 20; j >= 0; j--) {
+                box.push({ x : (j * (can0.width / 20)) - (can0.width / 2), y : (i * (can0.width / 20)) - (can0.width / 2) });
+            }
+        }
+    }
 
     drawTo0(box);
     drawTo5(box);
@@ -103,7 +128,6 @@ window.onload = function() {
                 pt = to5pp(pts[i]);
                 ctx5.lineTo(pt.x, pt.y);
             }
-            var pt = to5pp(pts[0]);
         ctx5.stroke();   
     };
 };

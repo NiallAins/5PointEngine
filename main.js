@@ -73,16 +73,31 @@ window.onload = function() {
         drawTo5(box);
     });
             
+    //Params:  Array - three points as [x0, y0, x1, y1, x2, y2]
+    //Returns: Array - circle center as [0,1] and radius as [2] 
     function to5pp(p) {
+        //Scale point between 1 and -1
         var r = can5.width / 2,
             scaleX = p.x / r,
             scaleY = p.y / r;
 
-        var ptsX = [1, 0, -1, 0, 0, scaleY];
-        var ptsY = [0, 1, 0, -1, scaleX, 0];
-        var newPt = getIntersec(getEq(ptsX), getEq(ptsY));
+        //Round extreme values
+        scaleX = Math.min(scaleX,  0.95);
+        scaleY = Math.min(scaleY,  0.95);
+        scaleX = Math.max(scaleX, -0.95);
+        scaleY = Math.max(scaleY, -0.95);
+
+        //Get each new axis by taking arc through point and vanishing points
+        var xAx = arcUsing([1, 0, -1, 0, 0, scaleY]);
+        var yAx = arcUsing([0, 1, 0, -1, scaleX, 0]);
+
+        //Get new point at new axis intersection
+        var newPt = arcIntersec(xAx, yAx);
+
+        //Rescale
         newPt.x *= r;
         newPt.y *= r;
+
         return newPt;
     };
 
@@ -112,24 +127,19 @@ window.onload = function() {
         ctx5.stroke();
     };
 
-    function sq(num) {
-        return num * num;
-    }
-
-    function getEq(p) {
-        var k = 0.5 * (((sq(p[0])+sq(p[1])) * (p[4]-p[2])) + ((sq(p[2])+sq(p[3])) * (p[0]-p[4])) + ((sq(p[4])+sq(p[5])) * (p[2]-p[0]))) / (p[1] * (p[4]-p[2])+(p[3] * (p[0]-p[4])+(p[5] * (p[2]-p[0]))));
-        
+    //Params:  Array - three points as [x0, y0, x1, y1, x2, y2]
+    //Returns: Array - circle center as [0,1] and radius as [2]
+    function arcUsing(p) {
+        var k = 0.5 * (((sq(p[0])+sq(p[1])) * (p[4]-p[2])) + ((sq(p[2])+sq(p[3])) * (p[0]-p[4])) + ((sq(p[4])+sq(p[5])) * (p[2]-p[0]))) / (p[1] * (p[4]-p[2])+(p[3] * (p[0]-p[4])+(p[5] * (p[2]-p[0]))));  
         var h = 0.5 * (((sq(p[0])+sq(p[1])) * (p[5]-p[3])) + ((sq(p[2])+sq(p[3])) * (p[1]-p[5])) + ((sq(p[4])+sq(p[5])) * (p[3]-p[1]))) / (p[0] * (p[5]-p[3])+(p[2] * (p[1]-p[5])+(p[4] * (p[3]-p[1]))));
-        
         var r = sq(p[0] - h) + sq(p[1] - k);
-        h = Math.round(h* 10000) / 10000;
-        k = Math.round(k* 10000) / 10000;
-        r = Math.round(r* 10000) / 10000;
         
         return [h, k, r];
     }
 
-    function getIntersec(c0, c1) {
+    //Params:  Two Arrays - circle centers as [0,1] and radius' as [2]
+    //Returns: Object - intersection point of two circles
+    function arcIntersec(c0, c1) {
         var p0 = [c0[0], c0[1], Math.sqrt(c0[2])];
         var p1 = [c1[0], c1[1], Math.sqrt(c1[2])];
 
@@ -142,9 +152,14 @@ window.onload = function() {
         var x4 = p2[0] - h*(p1[1] - p0[1])/d;
         var y4 = p2[1] + h*(p1[0] - p0[0])/d;
 
+        //Return relavent intersection point
         if (x3 * y3 > 0)
             return { x : x3, y : y3 };
         else
             return { x : x4, y : y4 };
+    }
+
+    function sq(num) {
+        return num * num;
     }
 };

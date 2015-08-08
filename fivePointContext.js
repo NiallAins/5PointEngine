@@ -8,19 +8,19 @@ function FPCtx(canvas, context) {
         return num * num;
     }
 
-    var clean = function(p, r) {
-        if (typeof(r) === 'undefined') { r = can.width / 2; }
 
+    //Avoids values approaching canvas edge or center
+    var clean = function(p) {
         var cx = p.x / r;
         var cy = p.y / r;
 
-        cx = Math.min(cx,  0.95);
-        cy = Math.min(cy,  0.95);
-        cx = Math.max(cx, -0.95);
-        cy = Math.max(cy, -0.95);
+        cx = Math.min(cx,  0.999);
+        cy = Math.min(cy,  0.999);
+        cx = Math.max(cx, -0.999);
+        cy = Math.max(cy, -0.999);
 
-        if (cx === 0) { cx = 0.0001 };
-        if (cy === 0) { cy = 0.0001 };
+        if (cx === 0) cx = 0.001;
+        if (cy === 0) cy = 0.001;
 
         cx *= r;
         cy *= r;
@@ -32,10 +32,9 @@ function FPCtx(canvas, context) {
     //Returns: Array - circle center as [0,1] and radius as [2] 
     var to5p = function(p) {
         //Scale point between 1 and -1
-        var r = can.width / 2;
-        var scaleP = clean({x : p.x / r, y : p.y / r}, 1);
-        var scaleX = scaleP.x;
-        var scaleY = scaleP.y;
+        p = clean(p);
+        var scaleX = p.x / r;
+        var scaleY = p.y / r;
 
         //Get each new axis by taking arc through point and vanishing points
         var xAx = arcUsing([1, 0, -1, 0, 0, scaleY]);
@@ -56,9 +55,9 @@ function FPCtx(canvas, context) {
     var arcUsing = function(p) {
         var k = 0.5 * (((sq(p[0])+sq(p[1])) * (p[4]-p[2])) + ((sq(p[2])+sq(p[3])) * (p[0]-p[4])) + ((sq(p[4])+sq(p[5])) * (p[2]-p[0]))) / (p[1] * (p[4]-p[2])+(p[3] * (p[0]-p[4])+(p[5] * (p[2]-p[0]))));  
         var h = 0.5 * (((sq(p[0])+sq(p[1])) * (p[5]-p[3])) + ((sq(p[2])+sq(p[3])) * (p[1]-p[5])) + ((sq(p[4])+sq(p[5])) * (p[3]-p[1]))) / (p[0] * (p[5]-p[3])+(p[2] * (p[1]-p[5])+(p[4] * (p[3]-p[1]))));
-        var r = Math.sqrt(sq(p[0] - h) + sq(p[1] - k));
+        var rad = Math.sqrt(sq(p[0] - h) + sq(p[1] - k));
         
-        return [h, k, r];
+        return [h, k, rad];
     }
 
     //Params:  Two Arrays - circle centers as [0,1] and radius' as [2]
@@ -86,12 +85,11 @@ function FPCtx(canvas, context) {
     //Params:  Array - three points as [x0, y0, x1, y1, x2, y2]
     //Returns: Array - circle center as [0,1] and radius as [2] 
     this.line = function(p00, p10) {
-        p00 = clean(p00);
+    	p00 = clean(p00);
         p10 = clean(p10);
 
         var yi = p00.y - ((p10.y - p00.y) / (p10.x - p00.x) * p00.x);
-        if (yi ===  Infinity) { yi = -r; }
-        if (yi === -Infinity) { yi =  r; }
+        if (Math.abs(yi) === Infinity) yi = r;
 
         var p05 = to5p(p00);
         var p15 = to5p(p10);
@@ -102,12 +100,20 @@ function FPCtx(canvas, context) {
         var eAng = Math.atan2(p15.y - c[1], p15.x - c[0]) + (Math.PI * 2);
 
         var arcAng = eAng - sAng;
-        if (arcAng >  Math.PI) { arcAng -= 2 * Math.PI; }
-        if (arcAng < -Math.PI) { arcAng += 2 * Math.PI; }
+        if (arcAng >  Math.PI) arcAng -= 2 * Math.PI;
+        if (arcAng < -Math.PI) arcAng += 2 * Math.PI;
 
-        ctx.beginPath();
-        	ctx.arc(c[0], c[1], c[2], sAng, eAng, arcAng < 0);
-        ctx.stroke();
+        ctx.arc(c[0], c[1], c[2], sAng, eAng, arcAng < 0);	
+    }
+
+    this.moveTo = function(xin, yin) {
+    	prevP = { x: xin, y : yin };
+    }
+
+    this.lineTo = function(xin, yin) {
+    	var p = { x: xin, y : yin };
+    	this.line(prevP, p);
+    	prevP = p;
     }
 
     this.rect = function(cP, w, h) {
@@ -115,9 +121,9 @@ function FPCtx(canvas, context) {
     	    p1 = {x:cP.x - w, y:cP.y + h},
     	    p2 = {x:cP.x + w, y:cP.y + h},
     	    p3 = {x:cP.x + w, y:cP.y - h};
-    	this.line(p0, p1);
-    	this.line(p1, p2);
-    	this.line(p2, p3);
-    	this.line(p3, p0);
-    }
+    		this.line(p0, p1);
+	    	this.line(p1, p2);
+	    	this.line(p2, p3);
+	    	this.line(p3, p0);
+	}
 }

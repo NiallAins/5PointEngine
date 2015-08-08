@@ -12,12 +12,12 @@ window.onload = function() {
     ctx5.translate(can5.width / 2, can5.height / 2);
     var fpCtx = new FPCtx(can5, ctx5);
 
-    ctx0.lineWidth = 1;
-    ctx5.lineWidth = 1;
+    ctx0.lineWidth = 2;
+    ctx5.lineWidth = 2;
 
     var mouseP = {x:0, y:0};
 
-    var scale = 2;
+    var scale = 1;
     var box = Box(scale);
     var boxTrans = [];
 
@@ -66,7 +66,7 @@ window.onload = function() {
         }
         drawTo0(boxTrans);
         drawTo5(boxTrans);
-    });
+    })
 
     can0.addEventListener('mousedown', function(e) {
         scale %= 6;
@@ -74,7 +74,7 @@ window.onload = function() {
         box = Box(scale);
         drawTo0(box);
         drawTo5(box);
-    });
+    })
             
     function drawTo0(pts) {
         ctx0.clearRect(-can0.width / 2, -can0.height / 2, can0.width, can0.height);
@@ -82,18 +82,21 @@ window.onload = function() {
         ctx0.strokeStyle = '#22F';
         ctx0.moveTo(pts[0].x, pts[0].y);
         ctx0.beginPath();
-        for(var i = 0; i < pts.length - 1; i++) {
+        for(var i = 0; i < pts.length; i++) {
             ctx0.lineTo(pts[i].x, pts[i].y);
         }
         ctx0.stroke();
-    };
+    }
 
     function drawTo5(pts) {
         ctx5.clearRect(-can5.width / 2, -can5.height / 2, can5.width, can5.height);
         
         ctx5.strokeStyle = '#F22';
-        for(var i = 0; i < pts.length - 1; i++) {
-            fpCtx.line(pts[i], pts[i + 1]);
+        fpCtx.moveTo(pts[0].x, pts[0].y);
+        ctx5.beginPath();
+        for(var i = 0; i < pts.length; i++) {
+            fpCtx.lineTo(pts[i].x, pts[i].y);
         }
-    };
+        ctx5.stroke();
+    }
 };

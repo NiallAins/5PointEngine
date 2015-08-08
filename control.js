@@ -33,29 +33,15 @@ function control() {
 		dt = (new_t - t) / 1000;
 		t = new_t;
 
-		//Select new peep to control
-		if (Input.mousePress) {
-			var i = 0;
-			for(; i < objs.length; i++) {
-				if (Input.mousePos.dis(objs[i].p) < objs[i].r) {
-					ctrlPeep = objs[i];
-					i = objs.length + 1;
-				}
-			}
-			if (i == objs.length) {
-				ctrlPeep.des = Input.mousePos.clone();
-			}
-		}
-
-		//Redraw
-		ctx0.clearRect(-can0.width / 2, -can0.width / 2, can0.width, can0.height);
-		ctx5.clearRect(-can5.width / 2, -can5.width / 2, can5.width, can5.height);
-
 		//Update game objects
 		for(var i = 0; i < objs.length; i++) {
 			objs[i].update();
 		}
 
+		//Redraw
+		ctx0.clearRect(-can0.width / 2, -can0.width / 2, can0.width, can0.height);
+		ctx5.clearRect(-can5.width / 2, -can5.width / 2, can5.width, can5.height);
+		
 		//Draw game objects
     	for(var i = 0; i < objs.length; i++) {
     		ctx0.beginPath();

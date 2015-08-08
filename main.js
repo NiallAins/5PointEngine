@@ -12,8 +12,8 @@ window.onload = function() {
     ctx5.translate(can5.width / 2, can5.height / 2);
     var fpCtx = new FPCtx(can5, ctx5);
 
-    ctx0.lineWidth = 2;
-    ctx5.lineWidth = 2;
+    ctx0.lineWidth = 1;
+    ctx5.lineWidth = 1;
 
     var mouseP = {x:0, y:0};
 

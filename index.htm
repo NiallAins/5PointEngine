@@ -1,11 +1,11 @@
 <html>
     <head>
-        <title>Cartesian to 5Point Perspective</title>
+        <title>5Point Perspective Engine</title>
         <style>
             #container {
-		        margin: 20px auto 0;
-		        text-align: center;
-	        }
+                margin: 20px auto 0;
+                text-align: center;
+            }
             #desc {
                 margin-left: 10%;
                 text-align: left;
@@ -20,25 +20,30 @@
                 background-color: #222;
                 border: 1px solid #000;
                 margin: 10px;
-		        width: 40%;
+                width: 40%;
             }
         </style>
         <script src="fivePointContext.js"></script>
-        <script src="main.js"></script>
+        <script src="init.js"></script>
+        <script src="util.js"></script>
+        <script src="vector.js"></script>
+        <script src="inputs.js"></script>
+        <script src="particle.js"></script>
+        <script src="peep.js"></script>
+        <script src="control.js"></script>
     </head>
     <body>
-	    <div id="container">
+        <div id="container">
             <div id="desc">
                 Flat 0-Point projection to 5-point perspective engine.
                     <br />
-                Mouse click to zoom. Depth on Z-Axis to come...
+                Click to move squares. Depth on Z-Axis to come...
                     <br /><br />
                 <a href="https://github.com/NiallAins/5PointEngine">&gt; GitHub Repo</a>
             </div>
 
-            <canvas id="can0"></canvas>
-            <canvas id="can5"></canvas>
+            <canvas id="canvas0"></canvas>
+            <canvas id="canvas5"></canvas>
         </div>
     </body>
 </html>
-            

@@ -116,14 +116,15 @@ function FPCtx(canvas, context) {
     	prevP = p;
     }
 
-    this.rect = function(cP, w, h) {
-    	var p0 = {x:cP.x - w, y:cP.y - h},
-    	    p1 = {x:cP.x - w, y:cP.y + h},
-    	    p2 = {x:cP.x + w, y:cP.y + h},
-    	    p3 = {x:cP.x + w, y:cP.y - h};
-    		this.line(p0, p1);
-	    	this.line(p1, p2);
-	    	this.line(p2, p3);
-	    	this.line(p3, p0);
+    this.rect = function(px, py, w, h) {
+    	var p0 = {x : px    , y : py    },
+    	    p1 = {x : px + w, y : py    },
+    	    p2 = {x : px + w, y : py + h},
+    	    p3 = {x : px    , y : py + h};
+    	    
+    	this.line(p0, p1);
+	    this.line(p1, p2);
+	    this.line(p2, p3);
+	    this.line(p3, p0);
 	}
 }

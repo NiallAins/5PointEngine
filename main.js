@@ -108,12 +108,13 @@ window.onload = function() {
 
     can0.addEventListener('mousedown', function(e) {
         scale -= 100;
+        scale %= -800
     })
 
     function transBox(transX, transY, box) {
         var boxTrans = [];
         for(var i = 0; i < box.length; i++) {
-            var pTrans = addDepth({ x : box[i].x - (can0.width  / 2) + transX,
+            var pTrans = addDepth({ x : box[i].x - (can0.width / 2) + transX,
                                     y : box[i].y - (can0.height / 2) + transY,
                                     z : box[i].z + scale                      });
             boxTrans.push(pTrans)

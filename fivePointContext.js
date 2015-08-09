@@ -10,9 +10,9 @@ function FPCtx(canvas, context) {
 
 
     //Avoids values approaching canvas edge or center
-    var clean = function(p) {
-        var cx = p.x / r;
-        var cy = p.y / r;
+    var clean = function(point) {
+        var cx = point.x / r;
+        var cy = point.y / r;
 
         cx = Math.min(cx,  0.999);
         cy = Math.min(cy,  0.999);
@@ -85,7 +85,7 @@ function FPCtx(canvas, context) {
     //Params:  Array - three points as [x0, y0, x1, y1, x2, y2]
     //Returns: Array - circle center as [0,1] and radius as [2] 
     this.line = function(p00, p10) {
-    	p00 = clean(p00);
+        p00 = clean(p00);
         p10 = clean(p10);
 
         var yi = p00.y - ((p10.y - p00.y) / (p10.x - p00.x) * p00.x);
@@ -111,9 +111,9 @@ function FPCtx(canvas, context) {
     }
 
     this.lineTo = function(xin, yin) {
-    	var p = { x: xin, y : yin };
-    	this.line(prevP, p);
-    	prevP = p;
+    	var nextP = { x: xin, y : yin };
+        this.line(prevP, nextP);
+    	prevP = nextP;
     }
 
     this.rect = function(px, py, w, h) {

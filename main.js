@@ -25,8 +25,9 @@ window.onload = function() {
 
     var grid = new Grid(can0.width);
     for(var i = 0; i < grid.length; i++) {
-        grid[i].x -= can0.width / 2;
-        grid[i].y -= can0.width / 2;
+        var newX = grid[i].x - (can0.width / 2);
+        var newY = grid[i].y - (can0.width / 2);
+        grid[i] = {x : newX, y : newY, z : -200};
     }
     canClear();
 
@@ -80,23 +81,6 @@ window.onload = function() {
                 {x: xin    , y: yin    , z: w} ];
     }
 
-    function addDepth(p) {
-        var r = can0.width  / 2;
-
-        var scaleX = p.x / r,
-            scaleY = p.y / r,
-            scaleZ = Math.min(p.z / r, 0.999);
-
-        scaleX *= 1 / (1 - scaleZ);
-        scaleY *= 1 / (1 - scaleZ);
-
-        p.x = scaleX * r;
-        p.y = scaleY * r;
-        p.z = scaleZ * r;
-
-        return p;
-    }
-
     document.addEventListener('mousemove', function(e) {
         var rect = can0.getBoundingClientRect();
         canClear();
@@ -107,16 +91,16 @@ window.onload = function() {
     })
 
     can0.addEventListener('mousedown', function(e) {
-        scale -= 100;
+        scale -=  100;
         scale %= -800
     })
 
     function transBox(transX, transY, box) {
         var boxTrans = [];
         for(var i = 0; i < box.length; i++) {
-            var pTrans = addDepth({ x : box[i].x - (can0.width / 2) + transX,
-                                    y : box[i].y - (can0.height / 2) + transY,
-                                    z : box[i].z + scale                      });
+            var pTrans = { x : box[i].x - (can0.width / 2) + transX,
+                           y : box[i].y - (can0.height / 2) + transY,
+                           z : box[i].z + scale};
             boxTrans.push(pTrans)
         }
         drawTo0(boxTrans);
@@ -139,9 +123,9 @@ window.onload = function() {
         ctx5.lineWidth = 1;
         ctx5.strokeStyle = '#555';
         ctx5.beginPath();
-            fpCtx.moveTo(grid[0].x, grid[0].y);
+            fpCtx.moveTo(grid[0].x, grid[0].y, -200);
             for(var i = 1; i < grid.length; i++) {
-                fpCtx.lineTo(grid[i].x, grid[i].y);
+                fpCtx.lineTo(grid[i].x, grid[i].y, -200);
             }
         ctx5.stroke();
     }
@@ -149,22 +133,25 @@ window.onload = function() {
     function drawTo0(pts) {
         ctx0.lineWidth = 2;
         ctx0.strokeStyle = '#22F';
+        ctx0.fillStyle = '#22F';
         ctx0.beginPath();
             ctx0.moveTo(pts[0].x, pts[0].y);
             for(var i = 1; i < pts.length; i++) {
                 ctx0.lineTo(pts[i].x, pts[i].y);
             }
-        ctx0.stroke();
+        ctx0.fill();
     }
 
     function drawTo5(pts) {
         ctx5.lineWidth = 2;
-        ctx5.strokeStyle = '#F22';
+        ctx5.strokeStyle = '#222';
+        ctx5.fillStyle = '#F22';
         ctx5.beginPath();
-            fpCtx.moveTo(pts[0].x, pts[0].y);
+            fpCtx.moveTo(pts[0].x, pts[0].y, pts[0].z);
             for(var i = 1; i < pts.length; i++) {
-                fpCtx.lineTo(pts[i].x, pts[i].y);
+                fpCtx.lineTo(pts[i].x, pts[i].y, pts[i].z);
             }
         ctx5.stroke();
+        ctx5.fill();
     }
 };

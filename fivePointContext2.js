@@ -10,20 +10,12 @@ function FPCtx(canvas, context) {
 
 
     //Avoids values approaching canvas edge or center
-    var clean = function(point) {
+    var norm = function(point) {
         var cx = point.x / r;
         var cy = point.y / r;
 
-        cx = Math.min(cx,  0.999);
-        cy = Math.min(cy,  0.999);
-        cx = Math.max(cx, -0.999);
-        cy = Math.max(cy, -0.999);
-
         if (cx === 0) cx = 0.001;
         if (cy === 0) cy = 0.001;
-
-        cx *= r;
-        cy *= r;
 
         return {x : cx, y : cy};
     }
@@ -32,25 +24,16 @@ function FPCtx(canvas, context) {
     //Returns: Array - circle center as [0,1] and radius as [2] 
     var to5p = function(p) {
         //Scale point between 1 and -1
-        p = clean(p);
-        var scaleX = p.x / r;
-        var scaleY = p.y / r;
+        var depth = r / (1 - Math.min(p.z / r, -0.001));
+        scaleP = norm(p);
 
-        //Get each new axis by taking arc through point and vanishing points
-        var xAx = arcUsing([1, 0, -1, 0, 0, scaleY]);
-        var yAx = arcUsing([0, 1, 0, -1, scaleX, 0]);
+        var newX = scaleP.x * Math.sqrt(1 - (scaleP.y * scaleP.y / 2) );
+        var newY = scaleP.y * Math.sqrt(1 - (scaleP.x * scaleP.x / 2) );
 
-        //Get new point at new axis intersection
-        var newPt = arcIntersec(xAx, yAx);
-
-        //Rescale
-        newPt.x *= r;
-        newPt.y *= r;
-
-        return newPt;
+        return {x : newX * depth, y : newY * depth};
     }
 
-	//Params:  Array - three points as [x0, y0, x1, y1, x2, y2]
+    //Params:  Array - three points as [x0, y0, x1, y1, x2, y2]
     //Returns: Array - circle center as [0,1] and radius as [2]
     var arcUsing = function(p) {
         var k = 0.5 * (((sq(p[0])+sq(p[1])) * (p[4]-p[2])) + ((sq(p[2])+sq(p[3])) * (p[0]-p[4])) + ((sq(p[4])+sq(p[5])) * (p[2]-p[0]))) / (p[1] * (p[4]-p[2])+(p[3] * (p[0]-p[4])+(p[5] * (p[2]-p[0]))));  
@@ -60,37 +43,14 @@ function FPCtx(canvas, context) {
         return [h, k, rad];
     }
 
-    //Params:  Two Arrays - circle centers as [0,1] and radius' as [2]
-    //Returns: Object - intersection point of two circles
-    var arcIntersec = function(c0, c1) {
-        var p0 = [c0[0], c0[1], c0[2]];
-        var p1 = [c1[0], c1[1], c1[2]];
-
-        var d = Math.sqrt(sq(p0[1] - p1[1]) + sq(p0[0] - p1[0])); 
-        var a = (sq(p0[2]) - sq(p1[2]) + d*d)/(2*d);
-        var h = Math.sqrt(sq(p0[2]) - a*a);
-        var p2 = [((p1[0] - p0[0]) * (a/d)) + p0[0], ((p1[1] - p0[1]) * (a/d)) + p0[1]];
-        var x3 = p2[0] + h*(p1[1] - p0[1])/d;
-        var y3 = p2[1] - h*(p1[0] - p0[0])/d;
-        var x4 = p2[0] - h*(p1[1] - p0[1])/d;
-        var y4 = p2[1] + h*(p1[0] - p0[0])/d;
-
-        //Return relavent intersection point
-        if (x3 * y3 > 0)
-            return { x : x3, y : y3 };
-        else
-            return { x : x4, y : y4 };
-    }
-
     //Params:  Array - three points as [x0, y0, x1, y1, x2, y2]
     //Returns: Array - circle center as [0,1] and radius as [2] 
     this.line = function(p00, p10) {
-        var rZ = 1 / (1 - Math.min(p00.z / r, -0.001));
-        p00 = clean(p00);
-        p10 = clean(p10);
+        /*p00 = norm(p00);
+        p10 = norm(p10);
 
         var yi = p00.y - ((p10.y - p00.y) / (p10.x - p00.x) * p00.x);
-        if (Math.abs(yi) === Infinity) yi = r;
+        if (Math.abs(yi) === Infinity) yi = 1;
 
         var p05 = to5p(p00);
         var p15 = to5p(p10);
@@ -107,7 +67,11 @@ function FPCtx(canvas, context) {
         ctx.save();
             ctx.scale(rZ, rZ);
             ctx.arc(c[0], c[1], c[2], sAng, eAng, arcAng < 0);	
-        ctx.restore();
+        ctx.restore();*/
+        var p05 = to5p(p00);
+        var p15 = to5p(p10);
+        ctx.lineTo(p05.x, p05.y);
+        ctx.lineTo(p15.x, p15.y);
     }
 
     this.moveTo = function(xin, yin, zin) {

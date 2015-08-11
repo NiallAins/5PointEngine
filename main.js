@@ -17,7 +17,7 @@ window.onload = function() {
     ctx5.lineWidth = 3;
     ctx5.lineJoin = 'round';
 
-    var scale = -200;
+    var scale = 1;
     var box0 = new Cube(-50, 100, 100);
     var box1 = new Cube(300, 200, 20);
     var box2 = new Cube(100, -200, 200);
@@ -27,7 +27,7 @@ window.onload = function() {
     for(var i = 0; i < grid.length; i++) {
         var newX = grid[i].x - (can0.width / 2);
         var newY = grid[i].y - (can0.width / 2);
-        grid[i] = {x : newX, y : newY, z : -200};
+        grid[i] = {x : newX, y : newY, z : 0.5};
     }
     canClear();
 
@@ -63,22 +63,23 @@ window.onload = function() {
     }
 
     function Cube(xin, yin, w) {
-        return [{x: xin    , y: yin    , z: 0},
-                {x: xin    , y: yin + w, z: 0},
-                {x: xin + w, y: yin + w, z: 0}, 
-                {x: xin + w, y: yin    , z: 0},
-                {x: xin    , y: yin    , z: 0},
-                {x: xin    , y: yin    , z: w},
-                {x: xin    , y: yin + w, z: w},
-                {x: xin    , y: yin + w, z: 0},
-                {x: xin    , y: yin + w, z: w},
-                {x: xin + w, y: yin + w, z: w},
-                {x: xin + w, y: yin + w, z: 0},
-                {x: xin + w, y: yin + w, z: w},
-                {x: xin + w, y: yin    , z: w},
-                {x: xin + w, y: yin    , z: 0},
-                {x: xin + w, y: yin    , z: w},
-                {x: xin    , y: yin    , z: w} ];
+        var zNorm = 1 + (1 / w);
+        return [{x: xin    , y: yin    , z: 1},
+                {x: xin    , y: yin + w, z: 1},
+                {x: xin + w, y: yin + w, z: 1}, 
+                {x: xin + w, y: yin    , z: 1},
+                {x: xin    , y: yin    , z: 1},
+                {x: xin    , y: yin    , z: d},
+                {x: xin    , y: yin + w, z: d},
+                {x: xin    , y: yin + w, z: 1},
+                {x: xin    , y: yin + w, z: d},
+                {x: xin + w, y: yin + w, z: d},
+                {x: xin + w, y: yin + w, z: d},
+                {x: xin + w, y: yin + w, z: 1},
+                {x: xin + w, y: yin    , z: 1},
+                {x: xin + w, y: yin    , z: d},
+                {x: xin + w, y: yin    , z: 1},
+                {x: xin    , y: yin    , z: 1} ];
     }
 
     document.addEventListener('mousemove', function(e) {
@@ -100,7 +101,7 @@ window.onload = function() {
         for(var i = 0; i < box.length; i++) {
             var pTrans = { x : box[i].x - (can0.width / 2) + transX,
                            y : box[i].y - (can0.height / 2) + transY,
-                           z : box[i].z + scale};
+                           z : box[i].z};
             boxTrans.push(pTrans)
         }
         drawTo0(boxTrans);
@@ -123,9 +124,9 @@ window.onload = function() {
         ctx5.lineWidth = 1;
         ctx5.strokeStyle = '#555';
         ctx5.beginPath();
-            fpCtx.moveTo(grid[0].x, grid[0].y, -200);
+            fpCtx.moveTo(grid[0]);
             for(var i = 1; i < grid.length; i++) {
-                fpCtx.lineTo(grid[i].x, grid[i].y, -200);
+                fpCtx.lineTo(grid[i]);
             }
         ctx5.stroke();
     }
@@ -147,9 +148,9 @@ window.onload = function() {
         ctx5.strokeStyle = '#222';
         ctx5.fillStyle = '#F22';
         ctx5.beginPath();
-            fpCtx.moveTo(pts[0].x, pts[0].y, pts[0].z);
+            fpCtx.moveTo(pts[0]);
             for(var i = 1; i < pts.length; i++) {
-                fpCtx.lineTo(pts[i].x, pts[i].y, pts[i].z);
+                fpCtx.lineTo(pts[i]);
             }
         ctx5.stroke();
         ctx5.fill();

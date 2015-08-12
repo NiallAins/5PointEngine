@@ -1,7 +1,6 @@
-function FPCtx(canvas, context) {
+function FPCtx(canvas, context, r) {
 	var can = canvas,
 		ctx = context,
-		r = canvas.width / 2,
 	    prevP;
 
     /* Five point perspective equivient of context.moveTo()
@@ -31,16 +30,63 @@ function FPCtx(canvas, context) {
             if (i === 1 || i === 2 || i === 5 || i === 6 ) cc[i].x += w;
             if (i === 2 || i === 3 || i === 6 || i === 7 ) cc[i].y += h;
             if (i > 3)                                     cc[i].z -= d;
-            cc[i] = to5p(cc[i]);
         }
 
-        //Draw 8 cube vertices
-        var ord = [1,2,3,0,4,5,6,7,4,1,5,2,6,3,7]
-        ctx.moveTo(cc[0].x, cc[0].y);
-        for(var i = 0; i < ord.length; i++) {
-            if (i > 8 && i % 2 != 0) ctx.moveTo(cc[ord[i]].x, cc[ord[i]].y);
-            else                     ctx.lineTo(cc[ord[i]].x, cc[ord[i]].y);
+        var sl;
+        //Draw either upper or lower face
+        if (cc[4].y > 0) {
+            sl = to5p(cc[4]);
+            ctx.moveTo(sl.x, sl.y);
+            line(cc[4], cc[5]);
+            sl = to5p(cc[1]);
+            ctx.lineTo(sl.x, sl.y);
+            line(cc[1], cc[0]);
+            sl = to5p(cc[4]);
+            ctx.lineTo(sl.x, sl.y);
         }
+        else if (cc[6].y < 0) {
+            sl = to5p(cc[6]);
+            ctx.moveTo(sl.x, sl.y);
+            line(cc[6], cc[7]);
+            sl = to5p(cc[3]);
+            ctx.lineTo(sl.x, sl.y);
+            line(cc[3], cc[2]);
+            sl = to5p(cc[6]);
+            ctx.lineTo(sl.x, sl.y);
+        }
+        ctx.fill();
+
+        //Draw either left or right faces
+        if (cc[4].x > 0) {
+            sl = to5p(cc[4]);
+            ctx.moveTo(sl.x, sl.y);
+            line(cc[4], cc[7]);
+            sl = to5p(cc[3]);
+            ctx.lineTo(sl.x, sl.y);
+            line(cc[3], cc[0]);
+            sl = to5p(cc[4]);
+            ctx.lineTo(sl.x, sl.y);
+        }
+        else if (cc[6].x < 0) {
+            sl = to5p(cc[5]);
+            ctx.moveTo(sl.x, sl.y);
+            line(cc[5], cc[6]);
+            sl = to5p(cc[2]);
+            ctx.lineTo(sl.x, sl.y);
+            line(cc[2], cc[1]);
+            sl = to5p(cc[5]);
+            ctx.lineTo(sl.x, sl.y);
+        }
+        ctx.fill();
+
+        //Draw top face
+        sl = to5p(cc[0]);
+        ctx.moveTo(sl.x, sl.y);
+        line(cc[0], cc[1]);
+        line(cc[1], cc[2]);
+        line(cc[2], cc[3]);
+        line(cc[3], cc[0]);
+        ctx.fill();
     }
 
     /** Takes the 3D co-ordinates of a point and returns the 2D
@@ -48,8 +94,13 @@ function FPCtx(canvas, context) {
       * {x, y, z} -> {x, y} */
     var to5p = function(p) {
         //To 2D normalised
-        var nX = p.x / r,
+        var nX = p.x / r;
             nY = p.y / r;
+
+        if (nX >  r) nX =  r;
+        if (nY >  r) nY =  r;
+        if (nX < -r) nX = -r;
+        if (nY < -r) nY = -r;
 
         //Get 5 point normalised
         var x5 = nX * Math.sqrt(1 - (nY * nY / 2) );

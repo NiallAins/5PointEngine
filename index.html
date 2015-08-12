@@ -2,45 +2,39 @@
     <head>
         <title>5Point Perspective Engine</title>
         <style>
-            #container {
-                margin: 20px auto 0;
-                text-align: center;
+            html, body {
+                padding: 0;
+                border: 0;
+                margin: 0;
             }
             #desc {
-                margin-left: 10%;
+                position: absolute;
+                height: 200px;
+                margin-bottom: -200px;
+                padding: 20px;
                 text-align: left;
+                color: #FFF;
                 font-family: Helvetica;
             }
             #desc a {
                 text-decoration: none;
-                color: #22A;
+                color: #99A;
             }
             canvas {
-                padding: 0;
                 background-color: #222;
-                border: 1px solid #000;
-                margin: 10px;
-                width: 40%;
+                width: 100vw;
+                height: 100vh;
             }
         </style>
         <script src="fivePointContext.js"></script>
-        <!--<script src="init.js"></script>
-        <script src="vector.js"></script>
-        <script src="particle.js"></script>
-        <script src="control.js"></script>-->
         <script src="main.js"></script>
     </head>
     <body>
-        <div id="container">
-            <div id="desc">
-                Flat 0-Point projection to 5-point perspective engine.
-                    <br />
-                Mouse moves cubes, click to zoom.
-                    <br /><br />
-                <a href="https://github.com/NiallAins/5PointEngine">&gt; GitHub Repo</a>
-            </div>
-
-            <canvas id="canvas"></canvas>
+        <div id="desc">
+            Flat 0-Point projection to 5-point perspective engine.
+            <br />
+            <a href="https://github.com/NiallAins/5PointEngine">&gt; GitHub Repo</a>
         </div>
+        <canvas id="canvas"></canvas>
     </body>
 </html>

@@ -3,27 +3,28 @@
 window.onload = function() {
     var can = document.getElementById('canvas'),
         ctx = can.getContext('2d');
-    can.width = can.height = window.innerWidth * 0.4;
-    var canR = can.width / 2;
-    ctx.translate(canR, canR);
-    var fpCtx = new FPCtx(can, ctx);
+    can.width  = window.innerWidth;
+    can.height = window.innerHeight;
+    var canR = can.height / 2;
+    ctx.translate(can.width / 2, can.height / 2);
+    var fpCtx = new FPCtx(can, ctx, canR);
 
     ctx.lineWidth = 3;
     ctx.lineJoin = 'round';
+    
+    var boxs = [{x : -50 , y: 100, z : 1},
+                {x :  300, y: 200, z : 1},
+                {x : -200, y: 100, z : 1},
+                {x :  50 , y : 50, z : 1}];
 
-    var scale = 1;
-    var box0 = [{x : -50 , y: 100, z : 1}];
-    var box1 = [{x :  300, y: 200, z : 1}];
-    var box2 = [{x : -200, y: 100, z : 1}];
-    var box3 = [{x :  50 , y : 50, z : 1}];
-
-    var grid = new Grid(can.width);
+    var grid = new Grid(can.height);
     for(var i = 0; i < grid.length; i++) {
         var newX = grid[i].x - canR;
         var newY = grid[i].y - canR;
         grid[i] = {x : newX, y : newY, z : 0.5};
     }
-    canClear();
+
+    draw(boxs);
 
     function Grid(w) {
         var arr = []; 
@@ -56,33 +57,25 @@ window.onload = function() {
     }
 
     document.addEventListener('mousemove', function(e) {
-        var rect = can.getBoundingClientRect();
-        canClear();
-        transBox(-rect.left + e.clientX, -rect.top + e.clientY, box0);
-        transBox(-rect.left + e.clientX, -rect.top + e.clientY, box1);
-        transBox(-rect.left + e.clientX, -rect.top + e.clientY, box2);
-        transBox(-rect.left + e.clientX, -rect.top + e.clientY, box3);
+        translate(e.clientX - (can.width / 2), e.clientY, boxs);
     })
 
-    can.addEventListener('mousedown', function(e) {
-        scale -=  100;
-        scale %= -800
-    })
-
-    function transBox(transX, transY, box) {
-        var boxTrans = [];
-        for(var i = 0; i < box.length; i++) {
-            var pTrans = { x : box[i].x - canR + transX,
-                           y : box[i].y - canR + transY,
-                           z : box[i].z};
-            boxTrans.push(pTrans)
+    function translate(transX, transY, pts) {
+        var ptsTrans = [];
+        for(var i = 0; i < pts.length; i++) {
+            var pTrans = { x : pts[i].x - canR + transX,
+                           y : pts[i].y - canR + transY,
+                           z : pts[i].z};
+            ptsTrans.push(pTrans);
         }
-        draw(boxTrans);
+        draw(ptsTrans);
     }
 
-    function canClear() {
-        ctx.clearRect(-canR, -canR, can.width, can.height);
+    function draw(pts) {
+        //Clear canvas
+        ctx.clearRect(-can.width / 2, -can.height / 2, can.width, can.height);
 
+        //Redraw Grid
         ctx.lineWidth = 1;
         ctx.strokeStyle = '#555';
         ctx.beginPath();
@@ -91,14 +84,23 @@ window.onload = function() {
                 fpCtx.lineTo(grid[i]);
             }
         ctx.stroke();
-    }
 
-    function draw(pts) {
+        //Draw points closer to center ontop of points closer circumference
+        /*pts = pts.sort(function(a, b) {
+            return (dist(b) - dist(a));
+        });*/
+
         ctx.lineWidth = 2;
-        ctx.strokeStyle = '#2F2';
+        ctx.strokeStyle = '#A00';
         ctx.fillStyle = '#F22';
         ctx.beginPath();
-            fpCtx.cube(pts[0], 0.5, 100);
+            for(var i = 0; i < pts.length; i++) {
+                fpCtx.cube(pts[i], 0.5, 100);
+            }
         ctx.stroke();
+    }
+    
+    function dist(pt) {
+        return Math.sqrt((pt.x * pt.x) + (pt.y * pt.y));
     }
 };

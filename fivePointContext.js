@@ -17,34 +17,30 @@ function FPCtx(canvas, context) {
         prevP = pIn;
     }
 
-    /* Takes a point, a width, height and depth and
-     * renders a cube in five point perspective with the point as center
-     * {x, y, z}, width, height, depth -> draw to ctx*/
-    this.cube = function(pIn, w) {
-        var px = pIn.x;
-        var py = pIn.y;
-        var pz = pIn.z;
-        var p0 = {x : px    , y : py    , z : pz},
-            p1 = {x : px + w, y : py    , z : pz},
-            p2 = {x : px + w, y : py + w, z : pz},
-            p3 = {x : px    , y : py + w, z : pz};
-            p4 = {x : px    , y : py    , z : pz + 0.5},
-            p5 = {x : px + w, y : py    , z : pz + 0.5},
-            p6 = {x : px + w, y : py + w, z : pz + 0.5},
-            p7 = {x : px    , y : py + w, z : pz + 0.5};
+    /* Takes a point with a width, height and depth and
+     * renders a cube in five point perspective with the point as lower top left 
+     * {x, y, z}, width -> draw to ctx*/
+    this.cube = function(pIn, d, w, h) {
+        if (typeof(w) === 'undefined') h = w = d;
+        if (typeof(h) === 'undefined') h = w;
 
-        line(p0, p1);
-        line(p1, p2);
-        line(p2, p3);
-        line(p3, p0);
-        line(p4, p5);
-        line(p5, p6);
-        line(p6, p7);
-        line(p7, p4);
-        line(p0, p4);
-        line(p1, p5);
-        line(p2, p6);
-        line(p3, p7);
+        //Define 8 cube corners in 5pp
+        var cc = [];
+        for(var i = 0; i < 8; i++) {
+            cc.push({x : pIn.x, y : pIn.y, z: pIn.z});
+            if (i === 1 || i === 2 || i === 5 || i === 6 ) cc[i].x += w;
+            if (i === 2 || i === 3 || i === 6 || i === 7 ) cc[i].y += h;
+            if (i > 3)                                     cc[i].z -= d;
+            cc[i] = to5p(cc[i]);
+        }
+
+        //Draw 8 cube vertices
+        var ord = [1,2,3,0,4,5,6,7,4,1,5,2,6,3,7]
+        ctx.moveTo(cc[0].x, cc[0].y);
+        for(var i = 0; i < pat.length; i++) {
+            if (i > 8 && i % 2 != 0) ctx.moveTo(cc[ord[i]].x, cc[ord[i]].y);
+            else                     ctx.lineTo(cc[ord[i]].x, cc[ord[i]].y);
+        }
     }
 
     /** Takes the 3D co-ordinates of a point and returns the 2D
@@ -69,7 +65,7 @@ function FPCtx(canvas, context) {
     var line = function(p1, p2) {
         //Axis intersection of line between points
         var xi = yi = p1.z;
-        if (p1.x === p2.x) xi *= p1.x - (p1.y / ((p2.y - p1.y) / (p2.x - p1.x)));
+        if (p1.x === p2.x) xi *= p1.x;
         else               yi *= p1.y - (((p2.y - p1.y) / (p2.x - p1.x))  * p1.x);
 
         //Get points in 5pp

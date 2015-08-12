@@ -37,7 +37,7 @@ function FPCtx(canvas, context) {
         //Draw 8 cube vertices
         var ord = [1,2,3,0,4,5,6,7,4,1,5,2,6,3,7]
         ctx.moveTo(cc[0].x, cc[0].y);
-        for(var i = 0; i < pat.length; i++) {
+        for(var i = 0; i < ord.length; i++) {
             if (i > 8 && i % 2 != 0) ctx.moveTo(cc[ord[i]].x, cc[ord[i]].y);
             else                     ctx.lineTo(cc[ord[i]].x, cc[ord[i]].y);
         }

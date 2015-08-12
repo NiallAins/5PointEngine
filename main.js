@@ -12,10 +12,10 @@ window.onload = function() {
     ctx.lineJoin = 'round';
 
     var scale = 1;
-    var box0 = [{x : -50 , y: 100, z : 0.5}];
-    var box1 = [{x :  300, y: 200, z : 0.5 }];
-    var box2 = [{x : -200, y: 100, z : 0.5 }];
-    var box3 = [{x :  50 , y : 50, z : 0.5 }];
+    var box0 = [{x : -50 , y: 100, z : 1}];
+    var box1 = [{x :  300, y: 200, z : 1}];
+    var box2 = [{x : -200, y: 100, z : 1}];
+    var box3 = [{x :  50 , y : 50, z : 1}];
 
     var grid = new Grid(can.width);
     for(var i = 0; i < grid.length; i++) {
@@ -64,7 +64,7 @@ window.onload = function() {
         transBox(-rect.left + e.clientX, -rect.top + e.clientY, box3);
     })
 
-    can0.addEventListener('mousedown', function(e) {
+    can.addEventListener('mousedown', function(e) {
         scale -=  100;
         scale %= -800
     })
@@ -98,7 +98,7 @@ window.onload = function() {
         ctx.strokeStyle = '#2F2';
         ctx.fillStyle = '#F22';
         ctx.beginPath();
-            fpCtx.cube(pts[0], 100);
+            fpCtx.cube(pts[0], 0.5, 100);
         ctx.stroke();
     }
 };

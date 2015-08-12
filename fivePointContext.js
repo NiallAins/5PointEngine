@@ -20,15 +20,31 @@ function FPCtx(canvas, context) {
     /* Takes a point, a width, height and depth and
      * renders a cube in five point perspective with the point as center
      * {x, y, z}, width, height, depth -> draw to ctx*/
-    this.cube = function(px, py, w, h) {
-        var p0 = {x : px    , y : py    },
-            p1 = {x : px + w, y : py    },
-            p2 = {x : px + w, y : py + h},
-            p3 = {x : px    , y : py + h};
-            p4 = {x : px    , y : py    },
-            p5 = {x : px + w, y : py    },
-            p6 = {x : px + w, y : py + h},
-            p7 = {x : px    , y : py + h};
+    this.cube = function(pIn, w) {
+        var px = pIn.x;
+        var py = pIn.y;
+        var pz = pIn.z;
+        var p0 = {x : px    , y : py    , z : pz},
+            p1 = {x : px + w, y : py    , z : pz},
+            p2 = {x : px + w, y : py + w, z : pz},
+            p3 = {x : px    , y : py + w, z : pz};
+            p4 = {x : px    , y : py    , z : pz + 0.5},
+            p5 = {x : px + w, y : py    , z : pz + 0.5},
+            p6 = {x : px + w, y : py + w, z : pz + 0.5},
+            p7 = {x : px    , y : py + w, z : pz + 0.5};
+
+        line(p0, p1);
+        line(p1, p2);
+        line(p2, p3);
+        line(p3, p0);
+        line(p4, p5);
+        line(p5, p6);
+        line(p6, p7);
+        line(p7, p4);
+        line(p0, p4);
+        line(p1, p5);
+        line(p2, p6);
+        line(p3, p7);
     }
 
     /** Takes the 3D co-ordinates of a point and returns the 2D

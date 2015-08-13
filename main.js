@@ -12,10 +12,13 @@ window.onload = function() {
     ctx.lineWidth = 3;
     ctx.lineJoin = 'round';
     
-    var boxs = [{x : -50 , y: 100, z : 1},
-                {x :  300, y: 200, z : 1},
-                {x : -200, y: 100, z : 1},
-                {x :  50 , y : 50, z : 1}];
+    var boxs = [{x : -50 , y : -100, z : 1},
+                {x :  300, y :  200, z : 1},
+                {x : -200, y :  100, z : 1},
+                {x :  50 , y :  100, z : 1},
+                {x : -300, y : -200, z : 1},
+                {x :  200, y :  100, z : 1},
+                {x :  300, y : -300, z : 1}];
 
     var grid = new Grid(can.height);
     for(var i = 0; i < grid.length; i++) {
@@ -86,18 +89,14 @@ window.onload = function() {
         ctx.stroke();
 
         //Draw points closer to center ontop of points closer circumference
-        /*pts = pts.sort(function(a, b) {
-            return (dist(b) - dist(a));
-        });*/
+        pts = pts.sort(function(a, b) { return (dist(b) - dist(a)) });
 
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#A00';
         ctx.fillStyle = '#F22';
-        ctx.beginPath();
-            for(var i = 0; i < pts.length; i++) {
-                fpCtx.cube(pts[i], 0.5, 100);
-            }
-        ctx.stroke();
+        for(var i = 0; i < pts.length; i++) {
+            fpCtx.cube(pts[i], 0.5, 100);
+        }
     }
     
     function dist(pt) {

@@ -32,6 +32,8 @@ function FPCtx(canvas, context, r) {
             if (i > 3)                                     cc[i].z -= d;
         }
 
+        ctx.beginPath()
+
         var sl;
         //Draw either upper or lower face
         if (cc[4].y > 0) {
@@ -87,6 +89,7 @@ function FPCtx(canvas, context, r) {
         line(cc[2], cc[3]);
         line(cc[3], cc[0]);
         ctx.fill();
+        ctx.stroke();
     }
 
     /** Takes the 3D co-ordinates of a point and returns the 2D
@@ -94,13 +97,8 @@ function FPCtx(canvas, context, r) {
       * {x, y, z} -> {x, y} */
     var to5p = function(p) {
         //To 2D normalised
-        var nX = p.x / r;
-            nY = p.y / r;
-
-        if (nX >  r) nX =  r;
-        if (nY >  r) nY =  r;
-        if (nX < -r) nX = -r;
-        if (nY < -r) nY = -r;
+        var nX = (Math.abs(p.x) >  r) ? r /*2 * Math.sign(p.x) - p.x / r*/ : p.x / r;
+        var nY = (Math.abs(p.y) >  r) ? r /*2 * Math.sign(p.y) - p.y / r */ : p.y / r;
 
         //Get 5 point normalised
         var x5 = nX * Math.sqrt(1 - (nY * nY / 2) );

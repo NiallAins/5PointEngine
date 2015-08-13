@@ -97,8 +97,8 @@ function FPCtx(canvas, context, r) {
       * {x, y, z} -> {x, y} */
     var to5p = function(p) {
         //To 2D normalised
-        var nX = (Math.abs(p.x) >  r) ? r /*2 * Math.sign(p.x) - p.x / r*/ : p.x / r;
-        var nY = (Math.abs(p.y) >  r) ? r /*2 * Math.sign(p.y) - p.y / r */ : p.y / r;
+        var nX = (Math.abs(p.x) >  r) ? Math.sign(p.x) /*2 * Math.sign(p.x) - p.x / r*/ : p.x / r;
+        var nY = (Math.abs(p.y) >  r) ? Math.sign(p.y) /*2 * Math.sign(p.y) - p.y / r */ : p.y / r;
 
         //Get 5 point normalised
         var x5 = nX * Math.sqrt(1 - (nY * nY / 2) );

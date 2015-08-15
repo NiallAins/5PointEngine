@@ -79,27 +79,37 @@ window.onload = function() {
         ctx.clearRect(-can.width / 2, -can.height / 2, can.width, can.height);
 
         //Redraw Grid
-        ctx.lineWidth = 1;
+        /*ctx.lineWidth = 1;
         ctx.strokeStyle = '#555';
         ctx.beginPath();
             fpCtx.moveTo(grid[0]);
             for(var i = 1; i < grid.length; i++) {
                 fpCtx.lineTo(grid[i]);
             }
-        ctx.stroke();
+        ctx.stroke();*/
+
+        var drawBG = true;
 
         //Draw points closer to center ontop of points closer circumference
-        pts = pts.sort(function(a, b) { return (dist(b) - dist(a)) });
+        //pts = pts.sort(function(a, b) { return (dist(b) - dist(a)) });
 
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#A00';
         ctx.fillStyle = '#F22';
         for(var i = 0; i < pts.length; i++) {
+            if(drawBG == true && dist(pts[i]) < canR) {
+                drawBG = false;
+                ctx.fillStyle = '#555';
+                fpCtx.rect({x : -canR, y : -canR, z : 0.5}, canR * 2);
+                ctx.fillStyle = '#F22'; 
+            }
             fpCtx.cube(pts[i], 0.5, 100);
         }
     }
-    
+
     function dist(pt) {
         return Math.sqrt((pt.x * pt.x) + (pt.y * pt.y));
     }
 };
+
+

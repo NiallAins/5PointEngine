@@ -32,7 +32,7 @@ function FPCtx(canvas, context, r) {
             if (i > 3)                                     cc[i].z -= d;
         }
 
-        ctx.beginPath()
+        ctx.beginPath();
 
         var sl;
         //Draw either upper or lower face
@@ -92,13 +92,33 @@ function FPCtx(canvas, context, r) {
         ctx.stroke();
     }
 
+    this.rect = function(pIn, w, h) {
+    if (typeof(h) === 'undefined') h = w;
+
+        //Define 8 cube corners in 5pp
+        var cc = [];
+        for(var i = 0; i < 4; i++) {
+            cc.push({x : pIn.x, y : pIn.y, z: pIn.z});
+            if (i === 1 || i === 2) cc[i].x += w;
+            if (i === 2 || i === 3) cc[i].y += h;
+        }
+
+        //Draw
+        ctx.beginPath();
+            line(cc[0], cc[1]);
+            line(cc[1], cc[2]);
+            line(cc[2], cc[3]);
+            line(cc[3], cc[0]);
+        ctx.fill();
+    }
+
     /** Takes the 3D co-ordinates of a point and returns the 2D
-      * co-ordinates of the point's projcetion from five point perspective
+      * co-ordinates of the point's projection from five point perspective
       * {x, y, z} -> {x, y} */
     var to5p = function(p) {
-        //To 2D normalised
-        var nX = (Math.abs(p.x) >  r) ? Math.sign(p.x) /*2 * Math.sign(p.x) - p.x / r*/ : p.x / r;
-        var nY = (Math.abs(p.y) >  r) ? Math.sign(p.y) /*2 * Math.sign(p.y) - p.y / r */ : p.y / r;
+        var cp = convergAtR(p);
+        var nX = cp.x / r,
+            nY = cp.y / r;
 
         //Get 5 point normalised
         var x5 = nX * Math.sqrt(1 - (nY * nY / 2) );
@@ -112,10 +132,13 @@ function FPCtx(canvas, context, r) {
       * as a curve projected from five point perspective
       * {x, y, z}, {x, y, z} -> draw to ctx */
     var line = function(p1, p2) {
+        var cp1 = convergAtR(p1),
+            cp2 = convergAtR(p2);
+
         //Axis intersection of line between points
-        var xi = yi = p1.z;
-        if (p1.x === p2.x) xi *= p1.x;
-        else               yi *= p1.y - (((p2.y - p1.y) / (p2.x - p1.x))  * p1.x);
+        var xi = yi = cp1.z;
+        if (p1.x === p2.x) xi *= cp1.x;
+        else               yi *= cp1.y - (((cp2.y - cp1.y) / (cp2.x - cp1.x))  * cp1.x);
 
         //Get points in 5pp
         var p15 = to5p(p1);
@@ -135,6 +158,12 @@ function FPCtx(canvas, context, r) {
 
         //Draw arc
         ctx.arc(c[0], c[1], c[2], sAng, eAng, arcAng < 0);
+    }
+
+    var convergAtR = function(p) {
+        var conX = p.x * (2 - (Math.abs(p.x) / r)),
+            conY = p.y * (2 - (Math.abs(p.y) / r));
+        return {x : conX, y : conY, z : p.z};
     }
 
     /** Takes an array of co-ordinates and returns the center

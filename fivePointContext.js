@@ -19,75 +19,79 @@ function FPCtx(canvas, context, r) {
     /* Takes a point with a width, height and depth and
      * renders a cube in five point perspective with the point as lower top left 
      * {x, y, z}, width -> draw to ctx*/
-    this.cube = function(pIn, d, w, h) {
-        if (typeof(w) === 'undefined') h = w = d;
-        if (typeof(h) === 'undefined') h = w;
+    this.cube = function(cube) {
+        var w = cube.width,
+            b = cube.breadth,
+            h = cube.height;
+            if (typeof(breadth) === 'undefined') b = w;
 
         //Define 8 cube corners in 5pp
         var cc = [];
         for(var i = 0; i < 8; i++) {
-            cc.push({x : pIn.x, y : pIn.y, z: pIn.z});
-            if (i === 1 || i === 2 || i === 5 || i === 6 ) cc[i].x += w;
-            if (i === 2 || i === 3 || i === 6 || i === 7 ) cc[i].y += h;
-            if (i > 3)                                     cc[i].z -= d;
+            cc.push({x : cube.x, y : cube.y, z: cube.z});
+            if (i === 1 || i === 2 || i === 5 || i === 6 ) { cc[i].x += w; }
+                else                                       { cc[i].x -= w; }
+            if (i === 2 || i === 3 || i === 6 || i === 7 ) { cc[i].y += b; }
+                else                                       { cc[i].y -= b; }
+            if (i > 3)                                     { cc[i].z += h; }
         }
 
         ctx.beginPath();
 
         var sl;
         //Draw either upper or lower face
-        if (cc[4].y > 0) {
-            sl = to5p(cc[4]);
+        if (cc[0].y > 0) {
+            sl = to5p(cc[0]);
             ctx.moveTo(sl.x, sl.y);
-            line(cc[4], cc[5]);
-            sl = to5p(cc[1]);
+            line(cc[0], cc[1]);
+            sl = to5p(cc[5]);
             ctx.lineTo(sl.x, sl.y);
-            line(cc[1], cc[0]);
-            sl = to5p(cc[4]);
+            line(cc[5], cc[4]);
+            sl = to5p(cc[0]);
             ctx.lineTo(sl.x, sl.y);
         }
-        else if (cc[6].y < 0) {
-            sl = to5p(cc[6]);
+        else if (cc[2].y < 0) {
+            sl = to5p(cc[2]);
             ctx.moveTo(sl.x, sl.y);
-            line(cc[6], cc[7]);
-            sl = to5p(cc[3]);
+            line(cc[2], cc[3]);
+            sl = to5p(cc[7]);
             ctx.lineTo(sl.x, sl.y);
-            line(cc[3], cc[2]);
-            sl = to5p(cc[6]);
+            line(cc[7], cc[6]);
+            sl = to5p(cc[2]);
             ctx.lineTo(sl.x, sl.y);
         }
         ctx.fill();
 
         //Draw either left or right faces
-        if (cc[4].x > 0) {
-            sl = to5p(cc[4]);
+        if (cc[0].x > 0) {
+            sl = to5p(cc[0]);
             ctx.moveTo(sl.x, sl.y);
-            line(cc[4], cc[7]);
-            sl = to5p(cc[3]);
+            line(cc[0], cc[3]);
+            sl = to5p(cc[7]);
             ctx.lineTo(sl.x, sl.y);
-            line(cc[3], cc[0]);
-            sl = to5p(cc[4]);
+            line(cc[7], cc[4]);
+            sl = to5p(cc[0]);
             ctx.lineTo(sl.x, sl.y);
         }
-        else if (cc[6].x < 0) {
-            sl = to5p(cc[5]);
+        else if (cc[2].x < 0) {
+            sl = to5p(cc[1]);
             ctx.moveTo(sl.x, sl.y);
-            line(cc[5], cc[6]);
-            sl = to5p(cc[2]);
+            line(cc[1], cc[2]);
+            sl = to5p(cc[6]);
             ctx.lineTo(sl.x, sl.y);
-            line(cc[2], cc[1]);
-            sl = to5p(cc[5]);
+            line(cc[6], cc[5]);
+            sl = to5p(cc[1]);
             ctx.lineTo(sl.x, sl.y);
         }
         ctx.fill();
 
         //Draw top face
-        sl = to5p(cc[0]);
+        sl = to5p(cc[4]);
         ctx.moveTo(sl.x, sl.y);
-        line(cc[0], cc[1]);
-        line(cc[1], cc[2]);
-        line(cc[2], cc[3]);
-        line(cc[3], cc[0]);
+        line(cc[4], cc[5]);
+        line(cc[5], cc[6]);
+        line(cc[6], cc[7]);
+        line(cc[7], cc[4]);
         ctx.fill();
         ctx.stroke();
     }
@@ -95,20 +99,20 @@ function FPCtx(canvas, context, r) {
     this.rect = function(pIn, w, h) {
     if (typeof(h) === 'undefined') h = w;
 
-        //Define 8 cube corners in 5pp
-        var cc = [];
+        //Define 4 square corners in 5pp
+        var sc = [];
         for(var i = 0; i < 4; i++) {
-            cc.push({x : pIn.x, y : pIn.y, z: pIn.z});
-            if (i === 1 || i === 2) cc[i].x += w;
-            if (i === 2 || i === 3) cc[i].y += h;
+            sc.push({x : pIn.x, y : pIn.y, z: pIn.z});
+            if (i === 1 || i === 2) sc[i].x += w;
+            if (i === 2 || i === 3) sc[i].y += h;
         }
 
         //Draw
         ctx.beginPath();
-            line(cc[0], cc[1]);
-            line(cc[1], cc[2]);
-            line(cc[2], cc[3]);
-            line(cc[3], cc[0]);
+            line(sc[0], sc[1]);
+            line(sc[1], sc[2]);
+            line(sc[2], sc[3]);
+            line(sc[3], sc[0]);
         ctx.fill();
     }
 
@@ -125,7 +129,7 @@ function FPCtx(canvas, context, r) {
         var y5 = nY * Math.sqrt(1 - (nX * nX / 2) );
 
         //Rescale relative to depth and return
-        return {x : x5 * r * p.z, y : y5 * r * p.z};
+        return {x : x5 * p.z * r, y : y5 * p.z * r};
     }
 
     /** Takes the 3D co-ordinates of two points and draws the line between them

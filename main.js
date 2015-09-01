@@ -18,11 +18,7 @@ window.onload = function() {
                 //{type: 'cube', x :  50 , y :  100, z : normZ(0), height : 0.5, width : 50},
                 //{type: 'cube', x : -300, y : -200, z : normZ(0), height : 0.5, width : 50},
                 //{type: 'cube', x :  200, y :  100, z : normZ(0), height : 0.5, width : 50},
-                {type: 'cube', x :    0, y :    0, z : normZ(0), height : 0.1, width : 5}];
-
-
-
-
+                {type: 'cube', x :    0, y :    0, z : normZ(0), height : 0.1, width : 50}];
 
     var grid = new Grid(can.height);
     for(var i = 0; i < grid.length; i++) {
@@ -30,7 +26,7 @@ window.onload = function() {
         var newY = grid[i].y - canR;
         grid[i] = {x : newX, y : newY, z : normZ(0)};
     }
-    objs.push({type: 'path', pts : grid, x : 0, y : 0, z : 0.5});
+    objs.unshift({type: 'path', pts : grid, x : 0, y : canR});
 
     draw(objs);
 
@@ -65,7 +61,7 @@ window.onload = function() {
     }
 
     document.addEventListener('mousemove', function(e) {
-        translate(e.clientX - canR, e.clientY, objs);
+        translate((e.clientX - canR) * 2, e.clientY * 2, objs);
     });
 
     function translate(transX, transY, pts) {
@@ -86,7 +82,7 @@ window.onload = function() {
         ctx.clearRect(-can.width / 2, -can.height / 2, can.width, can.height);
 
         //Draw points closer to center ontop of points closer circumference
-        objs = objs.sort(function(a, b) { return depthDist(a) - depthDist(b) });
+        objs = objs.sort(function(a, b) { return depthDist(b) - depthDist(a) });
 
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#A00';
@@ -123,12 +119,8 @@ window.onload = function() {
     }
 
     function depthDist(obj) {
-        var nx  = obj.x / canR;
-        var ny  = obj.y / canR;
-        var nDist = Math.sqrt((nx * nx) + (ny * ny));
-        var ang = nDist * Math.PI;
-        var nz = obj.z + (obj.height || 0);
-        var depth = 1 - (nz * (Math.cos(ang)));
+        var depth = Math.sqrt((obj.x * obj.x) + (obj.y * obj.y));
+        console.log(depth);
         return depth;
     }
 };

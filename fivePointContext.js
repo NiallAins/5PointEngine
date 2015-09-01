@@ -20,7 +20,7 @@ function FPCtx(canvas, context, r) {
      * renders a cube in five point perspective with the point as lower top left 
      * {x, y, z}, width -> draw to ctx*/
     this.cube = function(cube) {
-        var w = cube.width,
+        var w = cube.width, 
             b = cube.breadth,
             h = cube.height;
             if (typeof(breadth) === 'undefined') b = w;
@@ -40,7 +40,7 @@ function FPCtx(canvas, context, r) {
 
         var sl;
         //Draw either upper or lower face
-        if (cc[0].y > 0) {
+        if ((r - Math.abs(cc[0].y) > 0 && cc[0].y > 0) || (r - Math.abs(cc[0].y) < 0 && cc[0].y > 0)) {
             sl = to5p(cc[0]);
             ctx.moveTo(sl.x, sl.y);
             line(cc[0], cc[1]);
@@ -50,7 +50,7 @@ function FPCtx(canvas, context, r) {
             sl = to5p(cc[0]);
             ctx.lineTo(sl.x, sl.y);
         }
-        else if (cc[2].y < 0) {
+        else if ((r - Math.abs(cc[2].y) > 0 && cc[2].y < 0) || (r - Math.abs(cc[0].y) < 0 && cc[0].y < 0)) {
             sl = to5p(cc[2]);
             ctx.moveTo(sl.x, sl.y);
             line(cc[2], cc[3]);
@@ -63,7 +63,7 @@ function FPCtx(canvas, context, r) {
         ctx.fill();
 
         //Draw either left or right faces
-        if (cc[0].x > 0) {
+        if ((r - Math.abs(cc[0].x) > 0 && cc[0].x > 0) ){// || (r - Math.abs(cc[0].x) < 0 && cc[0].x < 0)) {
             sl = to5p(cc[0]);
             ctx.moveTo(sl.x, sl.y);
             line(cc[0], cc[3]);
@@ -73,7 +73,7 @@ function FPCtx(canvas, context, r) {
             sl = to5p(cc[0]);
             ctx.lineTo(sl.x, sl.y);
         }
-        else if (cc[2].x < 0) {
+        else if ((r - Math.abs(cc[1].x) > 0 && cc[1].x < 0) ){//|| (r - Math.abs(cc[0].x) < 0 && cc[0].x > 0)) {
             sl = to5p(cc[1]);
             ctx.moveTo(sl.x, sl.y);
             line(cc[1], cc[2]);
@@ -86,13 +86,15 @@ function FPCtx(canvas, context, r) {
         ctx.fill();
 
         //Draw top face
-        sl = to5p(cc[4]);
-        ctx.moveTo(sl.x, sl.y);
-        line(cc[4], cc[5]);
-        line(cc[5], cc[6]);
-        line(cc[6], cc[7]);
-        line(cc[7], cc[4]);
-        ctx.fill();
+        if (r - Math.abs(cube.y) > 0) {
+            sl = to5p(cc[4]);
+            ctx.moveTo(sl.x, sl.y);
+            line(cc[4], cc[5]);
+            line(cc[5], cc[6]);
+            line(cc[6], cc[7]);
+            line(cc[7], cc[4]);
+            ctx.fill();
+        }
         ctx.stroke();
     }
 
@@ -109,6 +111,7 @@ function FPCtx(canvas, context, r) {
 
         //Draw
         ctx.beginPath();
+            ctx.moveTo(to5p(sc[0]).x, to5p(sc[0]).y);
             line(sc[0], sc[1]);
             line(sc[1], sc[2]);
             line(sc[2], sc[3]);
@@ -125,8 +128,8 @@ function FPCtx(canvas, context, r) {
             nY = cp.y / r;
 
         //Get 5 point normalised
-        var x5 = nX * Math.sqrt(1 - (nY * nY / 2) );
-        var y5 = nY * Math.sqrt(1 - (nX * nX / 2) );
+        var x5 = nX * Math.sqrt(1 - (nY * nY / 2));
+        var y5 = nY * Math.sqrt(1 - (nX * nX / 2));
 
         //Rescale relative to depth and return
         return {x : x5 * p.z * r, y : y5 * p.z * r};
@@ -162,6 +165,7 @@ function FPCtx(canvas, context, r) {
 
         //Draw arc
         ctx.arc(c[0], c[1], c[2], sAng, eAng, arcAng < 0);
+        //ctx.lineTo(p25.x, p25.y);
     }
 
     var convergAtR = function(p) {
